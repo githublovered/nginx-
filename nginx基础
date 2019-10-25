@@ -1,0 +1,96 @@
+Nginx官网
+www.nginx.org
+
+Nginx的特点
+擅长处理静态小文件（1M）
+支持高并发（支持epoll模型）
+占用资源少
+2W并发连接，10个进程，200M内存
+配置简单、灵活、轻量
+功能丰富（Web、Proxy、Cache）
+工作在IOS第七层（支持限速、连接数限制等）
+Nginx基本功能
+静态服务（图片、视频、css、js、html）
+基于域名/IP/端口的虚拟主机
+Http/Https、SMTP、POP3反向代理
+TCP/UDP反向代理
+FastCGI、uWSGI反向代理
+负载均衡
+页面缓存（CDN）
+支持gzip、expirse
+URL Rewrite
+路径识别
+基于IP、用户的访问控制
+支持访问速率、并发限制
+反向代理（适用2000WPV、并发连接1W/秒）
+Nginx原理
+master process
+与外界通讯和工作进程管理
+读取nginx配置文件并验证有效性
+建立、绑定和关闭Socket
+按照配置文件生成、管理和结束工作进程
+nginx重启、停止、重载配置文件、平滑升级、管理日志文件
+worker process
+接收客户端请求，讲请求交给各个功能模块处理
+系统IO调用，获取相应的数据，发送相应给客户端
+数据缓存管理
+接收主进程指令，比如重启、关闭
+缓存索引重建及管理进程
+cache模块主要由缓存索引重建和缓存索引管理两个进程完成，缓存索引重建进程是在nginx服务启动一段时间后（默认1分钟），由主进程生成，对本地磁盘的索引文件在内存中建立元数据，包括扫描、过期更新等操作，完成后退出
+
+模块只有使用时才加载
+Nginx常用模块
+核心模块
+
+Core functionality
+标准模块
+
+ngx_http_core_module
+ngx_http_access_module
+ngx_http_fastcgi_module
+ngx_http_gzip_module
+ngx_http_rewrite_module
+ngx_http_upstream_module
+ngx_http_proxy_module
+ngx_http_limit_conn_module
+ngx_http_limit_req_module
+ngx_http_auth_basic_module
+ngx_http_log_module
+ngx_http_ssl_module
+ngx_http_status_module
+ngx_http_realip_module
+Nginx（Proxy）支持的算法
+rr 轮询
+wrr 权重轮询
+iphash hash算法（解决session命中）
+urlhash hash算法
+fair 动态算法（响应时间最短）
+
+Nginx部署(1.8.1)
+安装依赖
+yum install openssl-devel pcre-devel pcre gcc zlib -y
+
+pcre 正则处理需要
+gcc 编译需要
+zlib 压缩需要
+openssl 安全链接需要
+编译安装
+useradd nginx -s /sbin/nologin -M
+
+cd /opt && wget http://nginx.org/download/nginx-1.12.2.tar.gz
+tar xzf nginx-1.12.2.tar.gz && cd nginx-1.12.2
+
+./configure --prefix=/usr/local/nginx --user=nginx --group=nginx --with-http_ssl_module --with-http_geoip_module --with-stream  --with-http_stub_status_module --with-http_realip_module 
+
+make && make install 
+
+基本操作
+#启动
+/app/nginx/sbin/nginx
+#停止
+/app/nginx/sbin/nginx -s stop
+# 检查语法
+/app/nginx/sbin/nginx -t 
+#重启
+/app/nginx/sbin/nginx -s 
+#重启原理：生成基于新配置的线程，新请求转发到新线程，旧线程处理完成后停止。
